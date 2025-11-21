@@ -1,10 +1,10 @@
-
+<!DOCTYPE html>
 <html lang="ms">
 <head>
-    <meta charset="UTF-8"></meta>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"></meta>
-    <title>Kalkulator Peperiksaan Exam Calculator Malaysia Education</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"></link>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Peperiksaan Malaysia</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
             --primary: #3498db;
@@ -32,6 +32,7 @@
             color: #333;
             line-height: 1.6;
             padding: 10px;
+            transition: all 0.3s ease;
         }
         
         .container {
@@ -47,6 +48,31 @@
             margin-bottom: 20px;
             box-shadow: var(--box-shadow);
             text-align: center;
+            position: relative;
+        }
+        
+        .mode-selector {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .mode-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+        
+        .mode-btn.active {
+            background: rgba(255, 255, 255, 0.3);
+            font-weight: bold;
         }
         
         h1, h2, h3, h4 {
@@ -59,6 +85,11 @@
             box-shadow: var(--box-shadow);
             padding: 20px;
             margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .guest-mode .advanced-section {
+            display: none;
         }
         
         .form-group {
@@ -313,6 +344,27 @@
             justify-content: space-between;
         }
         
+        .guest-simple-calc {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+        }
+        
+        .calc-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .calc-result {
+            text-align: center;
+            padding: 15px;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+        
         @media (max-width: 768px) {
             .flex-container {
                 flex-direction: column;
@@ -336,6 +388,16 @@
             
             .action-cell {
                 flex-direction: column;
+            }
+            
+            .mode-selector {
+                position: static;
+                justify-content: center;
+                margin-top: 10px;
+            }
+            
+            .calc-grid {
+                grid-template-columns: 1fr;
             }
         }
         
@@ -363,264 +425,279 @@
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="container" id="appContainer">
         <header>
-            <h1><i class="fas fa-calculator"></i> Kalkulator Peperiksaan Calculator Exam Education</h1>
+            <h1><i class="fas fa-calculator"></i> Kalkulator Peperiksaan Malaysia</h1>
             <p>Sistem Pengiraan Markah Peperiksaan Malaysia Education</p>
+            <div class="mode-selector">
+                <button class="mode-btn active" id="guestModeBtn"><i class="fas fa-user"></i> Mode Guest</button>
+                <button class="mode-btn" id="advancedModeBtn"><i class="fas fa-cogs"></i> Mode Advanced</button>
+            </div>
         </header>
         
-        <div class="card">
-            <h2><i class="fas fa-info-circle"></i> Maklumat Peperiksaan</h2>
-            <div class="flex-container">
-                <div class="flex-item">
+        <!-- Guest Mode - Simple Calculator -->
+        <div class="guest-simple-calc" id="guestSimpleCalc">
+            <h2><i class="fas fa-calculator"></i> Kalkulator Ringkas</h2>
+            <div class="calc-grid">
+                <div>
                     <div class="form-group">
-                        <label for="examType"><i class="fas fa-file-alt"></i> Jenis Peperiksaan *Wajib Isi*</label>
-                        <select id="examType">
-                            <option value="">Sila pilih dibawah</option>
-                            <option value="Peperiksaan Awal Tahun">Peperiksaan Awal Tahun</option>
-                            <option value="Peperiksaan Pertengahan Tahun">Peperiksaan Pertengahan Tahun</option>
-                            <option value="Ujian Akhir Sesi Akademik (UASA)">Ujian Akhir Sesi Akademik (UASA)</option>
+                        <label for="guestMarkahDiperolehi">Markah Diperolehi</label>
+                        <input type="number" id="guestMarkahDiperolehi" placeholder="Masukkan markah yang diperolehi">
+                    </div>
+                    <div class="form-group">
+                        <label for="guestMarkahPenuh">Markah Penuh</label>
+                        <input type="number" id="guestMarkahPenuh" placeholder="Masukkan markah penuh" value="100">
+                    </div>
+                    <div class="form-group">
+                        <label for="guestExamType">Jenis Peperiksaan</label>
+                        <select id="guestExamType">
+                            <option value="standard">Standard</option>
+                            <option value="UASA">Ujian Akhir Sesi Akademik (UASA)</option>
                         </select>
                     </div>
-                    
-                    <div class="form-group">
-                        <label for="age"><i class="fas fa-user"></i> Umur *Sangat Wajib*</label>
-                        <input id="age" max="17" min="7" placeholder="Masukkan umur 7-17 tahun" type="number" />
+                    <button id="guestCalculateBtn"><i class="fas fa-calculator"></i> Kira</button>
+                </div>
+                <div class="calc-result">
+                    <h3>Keputusan</h3>
+                    <p><strong>Markah Diperolehi:</strong> <span id="guestTotalObtained">0</span></p>
+                    <p><strong>Markah Penuh:</strong> <span id="guestTotalFull">100</span></p>
+                    <p><strong>Peratus:</strong> <span id="guestPercentage">0</span>%</p>
+                    <p><strong>Gred:</strong> <span id="guestGrade">-</span></p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Advanced Mode Content -->
+        <div class="advanced-section">
+            <div class="card">
+                <h2><i class="fas fa-info-circle"></i> Maklumat Peperiksaan</h2>
+                <div class="flex-container">
+                    <div class="flex-item">
+                        <div class="form-group">
+                            <label for="examType"><i class="fas fa-file-alt"></i> Jenis Peperiksaan *Wajib Isi*</label>
+                            <select id="examType">
+                                <option value="">Sila pilih dibawah</option>
+                                <option value="Peperiksaan Awal Tahun">Peperiksaan Awal Tahun</option>
+                                <option value="Peperiksaan Pertengahan Tahun">Peperiksaan Pertengahan Tahun</option>
+                                <option value="Ujian Akhir Sesi Akademik (UASA)">Ujian Akhir Sesi Akademik (UASA)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="age"><i class="fas fa-user"></i> Umur *Sangat Wajib*</label>
+                            <input id="age" max="17" min="7" placeholder="Masukkan umur 7-17 tahun" type="number" />
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="schoolName"><i class="fas fa-school"></i> Nama Sekolah</label>
+                            <input id="schoolName" placeholder="Masukkan nama sekolah" type="text" />
+                        </div>
                     </div>
                     
-                    <div class="form-group">
-                        <label for="schoolName"><i class="fas fa-school"></i> Nama Sekolah</label>
-                        <input id="schoolName" placeholder="Masukkan nama sekolah" type="text" />
+                    <div class="flex-item">
+                        <div class="form-group">
+                            <label for="subject"><i class="fas fa-book"></i> Mata Pelajaran</label>
+                            <input id="subject" placeholder="Masukkan mata pelajaran" type="text" />
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="studentName"><i class="fas fa-user-graduate"></i> Nama Penjawab</label>
+                            <input id="studentName" placeholder="Masukkan nama penjawab" type="text" />
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="class"><i class="fas fa-chalkboard"></i> Kelas</label>
+                            <input id="class" placeholder="Kelas akan diisi automatik" type="text" />
+                        </div>
                     </div>
                 </div>
                 
-                <div class="flex-item">
-                    <div class="form-group">
-                        <label for="subject"><i class="fas fa-book"></i> Mata Pelajaran</label>
-                        <input id="subject" placeholder="Masukkan mata pelajaran" type="text" />
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="studentName"><i class="fas fa-user-graduate"></i> Nama Penjawab</label>
-                        <input id="studentName" placeholder="Masukkan nama penjawab" type="text" />
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="class"><i class="fas fa-chalkboard"></i> Kelas</label>
-                        <input id="class" placeholder="Kelas akan diisi automatik" type="text" />
-                    </div>
+                <div class="form-group">
+                    <label for="testName"><i class="fas fa-pen"></i> Nama Ujian</label>
+                    <input id="testName" placeholder="Masukkan nama ujian" type="text" />
+                </div>
+                
+                <div class="form-group">
+                    <label for="maxMarks"><i class="fas fa-chart-bar"></i> Jumlah Keseluruhan Markah Maksimum Untuk Ujian *Wajib isi rujuk kertas ujian*</label>
+                    <select id="maxMarks">
+                        <option value="100">100</option>
+                        <option value="80">80</option>
+                        <option value="74">74</option>
+                        <option value="70">70</option>
+                        <option value="60">60</option>
+                        <option value="50">50</option>
+                        <option value="40">40</option>
+                        <option value="20">20</option>
+                        <option value="custom">Lain-lain (Isi manual)</option>
+                    </select>
+                    <input class="hidden" id="customMaxMarks" placeholder="Masukkan markah maksimum" type="number" />
                 </div>
             </div>
             
-            <div class="form-group">
-                <label for="testName"><i class="fas fa-pen"></i> Nama Ujian</label>
-                <input id="testName" placeholder="Masukkan nama ujian" type="text" />
+            <div class="card">
+                <h2><i class="fas fa-calculator"></i> Pengiraan Markah</h2>
+                <table class="input-table">
+                    <thead>
+                        <tr>
+                            <th>Bahagian</th>
+                            <th>Bilangan Soalan</th>
+                            <th>Markah Penuh</th>
+                            <th>Markah Diperolehi *Wajib Isi Penting*</th>
+                        </tr>
+                    </thead>
+                    <tbody id="marksTableBody">
+                        <tr class="section-row">
+                            <td>A/Part1</td>
+                            <td><input class="question-count" min="0" type="number" value="0" /></td>
+                            <td><input class="full-marks" min="0" step="0.5" type="number" value="0" /></td>
+                            <td><input class="obtained-marks" min="0" step="0.5" type="number" value="0" /></td>
+                        </tr>
+                        <tr class="section-row">
+                            <td>B/Part2</td>
+                            <td><input class="question-count" min="0" type="number" value="0" /></td>
+                            <td><input class="full-marks" min="0" step="0.5" type="number" value="0" /></td>
+                            <td><input class="obtained-marks" min="0" step="0.5" type="number" value="0" /></td>
+                        </tr>
+                        <tr class="section-row">
+                            <td>C/Part3</td>
+                            <td><input class="question-count" min="0" type="number" value="0" /></td>
+                            <td><input class="full-marks" min="0" step="0.5" type="number" value="0" /></td>
+                            <td><input class="obtained-marks" min="0" step="0.5" type="number" value="0" /></td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="action-buttons">
+                    <button class="btn-secondary" id="addSection"><i class="fas fa-plus"></i> Tambah Bahagian</button>
+                    <button class="btn-info" id="undoBtn"><i class="fas fa-undo"></i> Undo</button>
+                </div>
+                
+                <div class="result-section">
+                    <h3><i class="fas fa-chart-line"></i> Keputusan</h3>
+                    <div class="flex-container">
+                        <div class="flex-item">
+                            <p><strong>Markah Diperolehi:</strong> <span id="totalObtained">0</span></p>
+                            <p><strong>Markah Penuh:</strong> <span class="yellow-bg" id="totalFull">0</span></p>
+                        </div>
+                        <div class="flex-item">
+                            <p><strong>⌛Peratus:</strong> <span id="percentage">0</span>%</p>
+                            <p><strong>⚖️Gred:</strong> <span id="grade">-</span></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="log-section">
+                    <h4><i class="fas fa-history"></i> Log Perubahan</h4>
+                    <div id="logContainer">
+                        <!-- Log items will be added here -->
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button id="calculateBtn"><i class="fas fa-calculator"></i> Kira Markah</button>
+                    <button class="btn-success" id="saveBtn"><i class="fas fa-save"></i> Simpan Keputusan</button>
+                    <button class="btn-danger" id="resetBtn"><i class="fas fa-redo"></i> Set Semula</button>
+                    <button class="btn-warning" id="fullscreenBtn"><i class="fas fa-expand"></i> Paparan Penuh</button>
+                </div>
             </div>
             
-            <div class="form-group">
-                <label for="maxMarks"><i class="fas fa-chart-bar"></i> Jumlah Keseluruhan Markah Maksimum Untuk Ujian *Wajib isi rujuk kertas ujian*</label>
-                <select id="maxMarks">
-                    <option value="100">100</option>
-                    <option value="80">80</option>
-                    <option value="74">74</option>
-                    <option value="70">70</option>
-                    <option value="60">60</option>
-                    <option value="50">50</option>
-                    <option value="40">40</option>
-                    <option value="20">20</option>
-                    <option value="custom">Lain-lain (Isi manual)</option>
-                </select>
-                <input class="hidden" id="customMaxMarks" placeholder="Masukkan markah maksimum" type="number" />
-            </div>
-        </div>
-        
-        <div class="card">
-            <h2><i class="fas fa-calculator"></i> Pengiraan Markah</h2>
-            <table class="input-table">
-                <thead>
-                    <tr>
-                        <th>Bahagian</th>
-                        <th>Bilangan Soalan</th>
-                        <th>Markah Penuh</th>
-                        <th>Markah Diperolehi *Wajib Isi Penting*</th>
-                    </tr>
-                </thead>
-                <tbody id="marksTableBody">
-                    <tr class="section-row">
-                        <td>A/Part1</td>
-                        <td><input class="question-count" min="0" type="number" value="0" /></td>
-                        <td><input class="full-marks" min="0" step="0.5" type="number" value="0" /></td>
-                        <td><input class="obtained-marks" min="0" step="0.5" type="number" value="0" /></td>
-                    </tr>
-                    <tr class="section-row">
-                        <td>B/Part2</td>
-                        <td><input class="question-count" min="0" type="number" value="0" /></td>
-                        <td><input class="full-marks" min="0" step="0.5" type="number" value="0" /></td>
-                        <td><input class="obtained-marks" min="0" step="0.5" type="number" value="0" /></td>
-                    </tr>
-                    <tr class="section-row">
-                        <td>C/Part3</td>
-                        <td><input class="question-count" min="0" type="number" value="0" /></td>
-                        <td><input class="full-marks" min="0" step="0.5" type="number" value="0" /></td>
-                        <td><input class="obtained-marks" min="0" step="0.5" type="number" value="0" /></td>
-                    </tr>
-                    <tr class="section-row">
-                        <td>D/Part4</td>
-                        <td><input class="question-count" min="0" type="number" value="0" /></td>
-                        <td><input class="full-marks" min="0" step="0.5" type="number" value="0" /></td>
-                        <td><input class="obtained-marks" min="0" step="0.5" type="number" value="0" /></td>
-                    </tr>
-                    <tr class="section-row">
-                        <td>E/Part5</td>
-                        <td><input class="question-count" min="0" type="number" value="0" /></td>
-                        <td><input class="full-marks" min="0" step="0.5" type="number" value="0" /></td>
-                        <td><input class="obtained-marks" min="0" step="0.5" type="number" value="0" /></td>
-                    </tr>
-                    <tr class="section-row">
-                        <td>F/Part6</td>
-                        <td><input class="question-count" min="0" type="number" value="0" /></td>
-                        <td><input class="full-marks" min="0" step="0.5" type="number" value="0" /></td>
-                        <td><input class="obtained-marks" min="0" step="0.5" type="number" value="0" /></td>
-                    </tr>
-                    <tr class="section-row">
-                        <td>G/Part7</td>
-                        <td><input class="question-count" min="0" type="number" value="0" /></td>
-                        <td><input class="full-marks" min="0" step="0.5" type="number" value="0" /></td>
-                        <td><input class="obtained-marks" min="0" step="0.5" type="number" value="0" /></td>
-                    </tr>
-                </tbody>
-            </table>
-            
-            <div class="action-buttons">
-                <button class="btn-secondary" id="addSection"><i class="fas fa-plus"></i> Tambah Bahagian</button>
-                <button class="btn-info" id="undoBtn"><i class="fas fa-undo"></i> Undo</button>
-            </div>
-            
-            <div class="result-section">
-                <h3><i class="fas fa-chart-line"></i> Keputusan</h3>
+            <div class="card">
+                <h2><i class="fas fa-list-alt"></i> Rekod Keputusan</h2>
                 <div class="flex-container">
                     <div class="flex-item">
-                        <p><strong>Markah Diperolehi:</strong> <span id="totalObtained">0</span></p>
-                        <p><strong>Markah Penuh:</strong> <span class="yellow-bg" id="totalFull">0</span></p>
+                        <p><strong><i class="fas fa-user-graduate"></i> Nama Penjawab:</strong> <span id="displayName">-</span></p>
+                        <p><strong><i class="fas fa-chalkboard"></i> Kelas / Tingkatan / Darjah:</strong> <span id="displayClass">-</span></p>
                     </div>
                     <div class="flex-item">
-                        <p><strong>⌛Peratus:</strong> <span id="percentage">0</span>%</p>
-                        <p><strong>⚖️Gred:</strong> <span id="grade">-</span></p>
+                        <p><strong><i class="fas fa-file-alt"></i> Jenis Ujian:</strong> <span id="displayExamType">-</span></p>
+                        <p><strong><i class="fas fa-calendar"></i> Tarikh:</strong> <span id="displayDate">-</span></p>
                     </div>
                 </div>
-            </div>
-            
-            <div class="log-section">
-                <h4><i class="fas fa-history"></i> Log Perubahan</h4>
-                <div id="logContainer">
-                    <!-- Log items will be added here -->
-                </div>
-            </div>
-            
-            <div class="action-buttons">
-                <button id="calculateBtn"><i class="fas fa-calculator"></i> Kira Markah</button>
-                <button class="btn-success" id="saveBtn"><i class="fas fa-save"></i> Simpan Keputusan</button>
-                <button class="btn-danger" id="resetBtn"><i class="fas fa-redo"></i> Set Semula</button>
-                <button class="btn-warning" id="fullscreenBtn"><i class="fas fa-expand"></i> Paparan Penuh</button>
-            </div>
-        </div>
-        
-        <div class="card">
-            <h2><i class="fas fa-list-alt"></i> Rekod Keputusan</h2>
-            <div class="flex-container">
-                <div class="flex-item">
-                    <p><strong><i class="fas fa-user-graduate"></i> Nama Penjawab:</strong> <span id="displayName">-</span></p>
-                    <p><strong><i class="fas fa-chalkboard"></i> Kelas / Tingkatan / Darjah:</strong> <span id="displayClass">-</span></p>
-                </div>
-                <div class="flex-item">
-                    <p><strong><i class="fas fa-file-alt"></i> Jenis Ujian:</strong> <span id="displayExamType">-</span></p>
-                    <p><strong><i class="fas fa-calendar"></i> Tarikh:</strong> <span id="displayDate">-</span></p>
-                </div>
-            </div>
-            
-            <div class="filter-section">
-                <h4><i class="fas fa-filter"></i> Filter</h4>
-                <div class="flex-container">
-                    <div class="flex-item">
-                        <label for="filterSubject">Mata Pelajaran</label>
-                        <select id="filterSubject">
-                            <option value="">Semua</option>
-                        </select>
+                
+                <div class="filter-section">
+                    <h4><i class="fas fa-filter"></i> Filter</h4>
+                    <div class="flex-container">
+                        <div class="flex-item">
+                            <label for="filterSubject">Mata Pelajaran</label>
+                            <select id="filterSubject">
+                                <option value="">Semua</option>
+                            </select>
+                        </div>
+                        <div class="flex-item">
+                            <label for="filterGrade">Gred</label>
+                            <select id="filterGrade">
+                                <option value="">Semua</option>
+                                <option value="A">A</option>
+                                <option value="B">B</option>
+                                <option value="C">C</option>
+                                <option value="D">D</option>
+                                <option value="E">E</option>
+                                <option value="F">F</option>
+                                <option value="TH">TH</option>
+                            </select>
+                        </div>
+                        <div class="flex-item">
+                            <label for="filterExamType">Jenis Ujian</label>
+                            <select id="filterExamType">
+                                <option value="">Semua</option>
+                                <option value="Peperiksaan Awal Tahun">Peperiksaan Awal Tahun</option>
+                                <option value="Peperiksaan Pertengahan Tahun">Peperiksaan Pertengahan Tahun</option>
+                                <option value="Ujian Akhir Sesi Akademik (UASA)">Ujian Akhir Sesi Akademik (UASA)</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="flex-item">
-                        <label for="filterGrade">Gred</label>
-                        <select id="filterGrade">
-                            <option value="">Semua</option>
-                            <option value="A">A</option>
-                            <option value="B">B</option>
-                            <option value="C">C</option>
-                            <option value="D">D</option>
-                            <option value="E">E</option>
-                            <option value="F">F</option>
-                            <option value="TH">TH</option>
-                        </select>
+                    <button class="btn-info" id="applyFilter"><i class="fas fa-check"></i> Gunakan Filter</button>
+                    <button class="btn-secondary" id="resetFilter"><i class="fas fa-times"></i> Set Semula Filter</button>
+                </div>
+                
+                <table id="resultsTable">
+                    <thead>
+                        <tr>
+                            <th>Bil</th>
+                            <th>Mata Pelajaran</th>
+                            <th>Markah Penuh</th>
+                            <th>Markah Diperolehi</th>
+                            <th>Gred</th>
+                            <th>Tindakan</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resultsBody">
+                        <!-- Results will be populated here -->
+                    </tbody>
+                </table>
+                
+                <div class="summary-grid">
+                    <div class="summary-item">
+                        <h4><i class="fas fa-book"></i> Bilangan Mata Pelajaran Terdaftar</h4>
+                        <p id="summarySubjectCount">0</p>
                     </div>
-                    <div class="flex-item">
-                        <label for="filterExamType">Jenis Ujian</label>
-                        <select id="filterExamType">
-                            <option value="">Semua</option>
-                            <option value="Peperiksaan Awal Tahun">Peperiksaan Awal Tahun</option>
-                            <option value="Peperiksaan Pertengahan Tahun">Peperiksaan Pertengahan Tahun</option>
-                            <option value="Ujian Akhir Sesi Akademik (UASA)">Ujian Akhir Sesi Akademik (UASA)</option>
-                        </select>
+                    <div class="summary-item">
+                        <h4><i class="fas fa-star"></i> Pencapaian Gred Keseluruhan</h4>
+                        <p id="summaryGradeAchievement">-</p>
+                    </div>
+                    <div class="summary-item">
+                        <h4><i class="fas fa-chart-bar"></i> Jumlah Mata Diperolehi</h4>
+                        <p id="summaryTotalMarks">0</p>
+                    </div>
+                    <div class="summary-item">
+                        <h4><i class="fas fa-percentage"></i> Peratus</h4>
+                        <p id="summaryPercentage">0%</p>
+                    </div>
+                    <div class="summary-item">
+                        <h4><i class="fas fa-graduation-cap"></i> Gred Purata Penjawab</h4>
+                        <p id="summaryAverageGrade">-</p>
+                    </div>
+                    <div class="summary-item">
+                        <h4><i class="fas fa-clipboard-check"></i> Keputusan</h4>
+                        <p id="summaryResult">-</p>
                     </div>
                 </div>
-                <button class="btn-info" id="applyFilter"><i class="fas fa-check"></i> Gunakan Filter</button>
-                <button class="btn-secondary" id="resetFilter"><i class="fas fa-times"></i> Set Semula Filter</button>
-            </div>
-            
-            <table id="resultsTable">
-                <thead>
-                    <tr>
-                        <th>Bil</th>
-                        <th>Mata Pelajaran</th>
-                        <th>Markah Penuh</th>
-                        <th>Markah Diperolehi</th>
-                        <th>Gred</th>
-                        <th>Tindakan</th>
-                    </tr>
-                </thead>
-                <tbody id="resultsBody">
-                    <!-- Results will be populated here -->
-                </tbody>
-            </table>
-            
-            <div class="summary-grid">
-                <div class="summary-item">
-                    <h4><i class="fas fa-book"></i> Bilangan Mata Pelajaran Terdaftar</h4>
-                    <p id="summarySubjectCount">0</p>
+                
+                <div class="action-buttons">
+                    <button class="btn-success" id="downloadBtn"><i class="fas fa-download"></i> Muat Turun CSV</button>
+                    <button class="btn-secondary" id="uploadBtn"><i class="fas fa-upload"></i> Muat Naik Data</button>
+                    <input accept=".csv" class="hidden" id="fileInput" type="file" />
                 </div>
-                <div class="summary-item">
-                    <h4><i class="fas fa-star"></i> Pencapaian Gred Keseluruhan</h4>
-                    <p id="summaryGradeAchievement">-</p>
-                </div>
-                <div class="summary-item">
-                    <h4><i class="fas fa-chart-bar"></i> Jumlah Mata Diperolehi</h4>
-                    <p id="summaryTotalMarks">0</p>
-                </div>
-                <div class="summary-item">
-                    <h4><i class="fas fa-percentage"></i> Peratus</h4>
-                    <p id="summaryPercentage">0%</p>
-                </div>
-                <div class="summary-item">
-                    <h4><i class="fas fa-graduation-cap"></i> Gred Purata Penjawab</h4>
-                    <p id="summaryAverageGrade">-</p>
-                </div>
-                <div class="summary-item">
-                    <h4><i class="fas fa-clipboard-check"></i> Keputusan</h4>
-                    <p id="summaryResult">-</p>
-                </div>
-            </div>
-            
-            <div class="action-buttons">
-                <button class="btn-success" id="downloadBtn"><i class="fas fa-download"></i> Muat Turun CSV</button>
-                <button class="btn-secondary" id="uploadBtn"><i class="fas fa-upload"></i> Muat Naik Data</button>
-                <input accept=".csv" class="hidden" id="fileInput" type="file" />
             </div>
         </div>
     </div>
@@ -691,7 +768,24 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Elements
+            // Mode Selector Elements
+            const guestModeBtn = document.getElementById('guestModeBtn');
+            const advancedModeBtn = document.getElementById('advancedModeBtn');
+            const appContainer = document.getElementById('appContainer');
+            const guestSimpleCalc = document.getElementById('guestSimpleCalc');
+            const advancedSection = document.querySelector('.advanced-section');
+            
+            // Guest Mode Elements
+            const guestMarkahDiperolehi = document.getElementById('guestMarkahDiperolehi');
+            const guestMarkahPenuh = document.getElementById('guestMarkahPenuh');
+            const guestExamType = document.getElementById('guestExamType');
+            const guestCalculateBtn = document.getElementById('guestCalculateBtn');
+            const guestTotalObtained = document.getElementById('guestTotalObtained');
+            const guestTotalFull = document.getElementById('guestTotalFull');
+            const guestPercentage = document.getElementById('guestPercentage');
+            const guestGrade = document.getElementById('guestGrade');
+            
+            // Advanced Mode Elements
             const ageInput = document.getElementById('age');
             const examTypeSelect = document.getElementById('examType');
             const classInput = document.getElementById('class');
@@ -752,6 +846,56 @@
             let resultsData = [];
             let logHistory = [];
             let currentState = {};
+            
+            // Initialize app in guest mode
+            function initializeApp() {
+                setMode('guest');
+                updateDateTime();
+                loadFromLocalStorage();
+                saveState();
+                
+                // Update time every minute
+                setInterval(updateDateTime, 60000);
+            }
+            
+            // Set mode (guest or advanced)
+            function setMode(mode) {
+                if (mode === 'guest') {
+                    appContainer.classList.add('guest-mode');
+                    guestModeBtn.classList.add('active');
+                    advancedModeBtn.classList.remove('active');
+                    guestSimpleCalc.style.display = 'block';
+                    advancedSection.style.display = 'none';
+                } else {
+                    appContainer.classList.remove('guest-mode');
+                    guestModeBtn.classList.remove('active');
+                    advancedModeBtn.classList.add('active');
+                    guestSimpleCalc.style.display = 'none';
+                    advancedSection.style.display = 'block';
+                }
+            }
+            
+            // Guest mode calculation
+            function calculateGuestResults() {
+                const obtained = parseFloat(guestMarkahDiperolehi.value) || 0;
+                const full = parseFloat(guestMarkahPenuh.value) || 100;
+                const examType = guestExamType.value;
+                
+                if (obtained > full) {
+                    alert('Markah diperolehi tidak boleh lebih daripada markah penuh!');
+                    return;
+                }
+                
+                const percentage = (obtained / full) * 100;
+                const grade = determineGrade(percentage, 15, examType === 'UASA' ? 'Ujian Akhir Sesi Akademik (UASA)' : 'standard');
+                
+                guestTotalObtained.textContent = obtained.toFixed(2);
+                guestTotalFull.textContent = full;
+                guestPercentage.textContent = percentage.toFixed(2);
+                guestGrade.textContent = grade;
+                
+                applyGradeColor(guestGrade, grade);
+            }
             
             // Update date and time
             function updateDateTime() {
@@ -980,7 +1124,6 @@
                             <button class="btn-info info-btn" data-id="${result.id}"><i class="fas fa-info-circle"></i></button>
                             <button class="btn-warning edit-btn" data-id="${result.id}"><i class="fas fa-edit"></i></button>
                             <button class="btn-danger delete-btn" data-id="${result.id}"><i class="fas fa-trash"></i></button>
-                            <button class="btn-secondary archive-btn" data-id="${result.id}"><i class="fas fa-archive"></i></button>
                         </td>
                     `;
                     
@@ -1023,14 +1166,6 @@
                     btn.addEventListener('click', function() {
                         const id = this.getAttribute('data-id');
                         deleteResult(id);
-                    });
-                });
-                
-                // Archive buttons
-                document.querySelectorAll('.archive-btn').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const id = this.getAttribute('data-id');
-                        archiveResult(id);
                     });
                 });
             }
@@ -1090,13 +1225,6 @@
                 }
             }
             
-            // Archive result
-            function archiveResult(id) {
-                const result = resultsData.find(r => r.id == id);
-                alert(`Keputusan untuk ${result.subject} telah diarkibkan.`);
-                addToLog(`Keputusan diarkib: ${result.subject}`);
-            }
-            
             // Update filter options
             function updateFilterOptions() {
                 // Get unique subjects
@@ -1139,7 +1267,6 @@
                             <button class="btn-info info-btn" data-id="${result.id}"><i class="fas fa-info-circle"></i></button>
                             <button class="btn-warning edit-btn" data-id="${result.id}"><i class="fas fa-edit"></i></button>
                             <button class="btn-danger delete-btn" data-id="${result.id}"><i class="fas fa-trash"></i></button>
-                            <button class="btn-secondary archive-btn" data-id="${result.id}"><i class="fas fa-archive"></i></button>
                         </td>
                     `;
                     
@@ -1373,7 +1500,7 @@
                 }
                 
                 // Prepare CSV content
-                let csvContent = "Bil,Mata Pelajaran,Markah Penuh,Markah Diperolehi,Gred,Jenis Ujian,Tarikh\n";
+                let csvContent = "Bil,Mata Pelajaran,Markah Penuh,Markah Diperolehi,Gred,Jenis Ujian,Tarikh,Nama Penjawab,Kelas,Sekolah,Nama Ujian\n";
                 
                 resultsData.forEach((result, index) => {
                     const rowData = [
@@ -1383,7 +1510,11 @@
                         result.totalObtained,
                         result.grade,
                         result.examType,
-                        result.date
+                        result.date,
+                        result.studentName,
+                        result.studentClass,
+                        result.schoolName,
+                        result.testName
                     ];
                     
                     csvContent += rowData.map(field => `"${field}"`).join(',') + '\n';
@@ -1417,6 +1548,7 @@
                         alert('Data berjaya dimuat naik!');
                         addToLog('Data dimuat naik dari CSV');
                     } catch (error) {
+                        console.error(error);
                         alert('Ralat: Fail tidak sah. Sila pilih fail CSV yang betul.');
                     }
                 };
@@ -1429,6 +1561,8 @@
             // Process CSV data
             function processCSVData(csvText) {
                 const lines = csvText.split('\n');
+                const newResults = [];
+                
                 // Skip header row
                 for (let i = 1; i < lines.length; i++) {
                     if (lines[i].trim() === '') continue;
@@ -1438,18 +1572,23 @@
                     
                     const rowData = {
                         id: Date.now() + i,
-                        subject: values[1],
-                        totalFull: values[2],
-                        totalObtained: values[3],
-                        grade: values[4],
+                        subject: values[1] || 'Tidak Dinyatakan',
+                        totalFull: values[2] || '0',
+                        totalObtained: values[3] || '0',
+                        grade: values[4] || '-',
                         examType: values[5] || 'Tidak Dinyatakan',
-                        date: values[6] || new Date().toLocaleDateString('ms-MY')
+                        date: values[6] || new Date().toLocaleDateString('ms-MY'),
+                        studentName: values[7] || 'Tidak Dinyatakan',
+                        studentClass: values[8] || 'Tidak Dinyatakan',
+                        schoolName: values[9] || 'Tidak Dinyatakan',
+                        testName: values[10] || 'Tidak Dinyatakan'
                     };
                     
-                    // Add to data array
-                    resultsData.push(rowData);
+                    newResults.push(rowData);
                 }
                 
+                // Replace existing data with uploaded data
+                resultsData = newResults;
                 updateResultsTable();
                 updateSummary();
                 saveToLocalStorage();
@@ -1524,6 +1663,9 @@
             }
             
             // Event listeners
+            guestModeBtn.addEventListener('click', () => setMode('guest'));
+            advancedModeBtn.addEventListener('click', () => setMode('advanced'));
+            guestCalculateBtn.addEventListener('click', calculateGuestResults);
             ageInput.addEventListener('input', updateClass);
             calculateBtn.addEventListener('click', calculateResults);
             saveBtn.addEventListener('click', saveResult);
@@ -1539,12 +1681,7 @@
             resetFilterBtn.addEventListener('click', resetFilter);
             
             // Initialize
-            updateDateTime();
-            loadFromLocalStorage();
-            saveState();
-            
-            // Update time every minute
-            setInterval(updateDateTime, 60000);
+            initializeApp();
         });
     </script>
 </body>
